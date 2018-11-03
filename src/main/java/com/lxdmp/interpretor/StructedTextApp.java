@@ -9,6 +9,42 @@ public class StructedTextApp
 {
 	private final static String grammerFileEncoding = "UTF-8";
 
+	// convert and format
+	public static class ToUnicodeString extends TestBaseListener
+	{
+		private int depth = 0;
+		@Override
+		public void enterInit(TestParser.InitContext ctx)
+		{
+			++depth;
+		}
+		
+		@Override
+		public void exitInit(TestParser.InitContext ctx)
+		{
+			--depth;
+		}
+	
+		@Override
+		public void enterValue(TestParser.ValueContext ctx)
+		{
+			TerminalNode terminal = ctx.INT();
+			if(terminal!=null)
+			{
+				int val = Integer.valueOf(terminal.getText());
+				for(int i=0; i<this.depth-1; ++i)
+					System.out.print("    ");
+				System.out.printf("\\u%04x", val);
+				System.out.println("");
+			}
+		}
+
+		@Override
+		public void exitValue(TestParser.ValueContext ctx)
+		{
+		}
+	}
+
     public static void main(String[] args)
     {
 		try{
@@ -20,7 +56,15 @@ public class StructedTextApp
 			TestParser parser = new TestParser(tokens); // 建立语法分析器
 			ParseTree tree = parser.init(); // 针对init规则进行语法分析
 			
-			System.out.println(tree.toStringTree(parser));
+			{
+				System.out.println(tree.toStringTree(parser));
+
+				System.out.println(" ==> ");
+
+				ParseTreeWalker walker = new ParseTreeWalker();
+				walker.walk(new ToUnicodeString(), tree);
+				System.out.println("");
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
