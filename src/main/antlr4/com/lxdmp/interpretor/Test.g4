@@ -1,8 +1,8 @@
 grammar Test;
 
 init : '{' value (',' value)* '}';
-value : init | 
-	INT;
+value : init 
+	|   INT;
 
 INT : [0-9]+;
 WS : [ \t\r\n]+ -> skip;

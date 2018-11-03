@@ -45,26 +45,44 @@ public class StructedTextApp
 		}
 	}
 
+	public void test() throws Exception
+	{
+		ANTLRInputStream input = new ANTLRInputStream(
+			new StructedTextApp().loadFileFromPackage("test1")
+		); // 建立输入流
+		TestLexer lexer = new TestLexer(input); // 建立词法分析器
+		CommonTokenStream tokens = new CommonTokenStream(lexer); // 建立词法符号流
+		TestParser parser = new TestParser(tokens); // 建立语法分析器
+		ParseTree tree = parser.init(); // 针对init规则进行语法分析
+		
+		{
+			System.out.println(tree.toStringTree(parser));
+
+			System.out.println(" ==> ");
+
+			ParseTreeWalker walker = new ParseTreeWalker();
+			walker.walk(new ToUnicodeString(), tree);
+			System.out.println("");
+		}
+	}
+
+	public void calculator() throws Exception
+	{
+		ANTLRInputStream input = new ANTLRInputStream(
+			new StructedTextApp().loadFileFromPackage("test2")
+		); // 建立输入流
+		CalculatorLexer lexer = new CalculatorLexer(input); // 建立词法分析器
+		CommonTokenStream tokens = new CommonTokenStream(lexer); // 建立词法符号流
+		CalculatorParser parser = new CalculatorParser(tokens); // 建立语法分析器
+		ParseTree tree = parser.prog(); // 针对prog规则进行语法分析
+		System.out.println(tree.toStringTree(parser));
+	}
+
     public static void main(String[] args)
     {
 		try{
-			ANTLRInputStream input = new ANTLRInputStream(
-				new StructedTextApp().loadFileFromPackage("test")
-			); // 建立输入流
-			TestLexer lexer = new TestLexer(input); // 建立词法分析器
-			CommonTokenStream tokens = new CommonTokenStream(lexer); // 建立词法符号流
-			TestParser parser = new TestParser(tokens); // 建立语法分析器
-			ParseTree tree = parser.init(); // 针对init规则进行语法分析
-			
-			{
-				System.out.println(tree.toStringTree(parser));
-
-				System.out.println(" ==> ");
-
-				ParseTreeWalker walker = new ParseTreeWalker();
-				walker.walk(new ToUnicodeString(), tree);
-				System.out.println("");
-			}
+			new StructedTextApp().test();
+			new StructedTextApp().calculator();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
